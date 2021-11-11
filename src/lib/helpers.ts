@@ -19,7 +19,9 @@ const serializeSpecialTypes = (data: any) => {
   const cleaned: any = {};
   Object.keys(data).map(key => {
     let rawValue = data[key];
-    if (rawValue instanceof admin.firestore.Timestamp) {
+    if (rawValue === null) {
+
+    } else if (rawValue.constructor.name === 'Timestamp') {
       rawValue = {
         __datatype__: 'timestamp',
         value: {
@@ -67,7 +69,7 @@ const unserializeSpecialTypes = (data: any): any => {
             const millis = Date.parse(rawValue.value);
             rawValue = new admin.firestore.Timestamp(millis / 1000, 0);
           } else {
-            rawValue = new admin.firestore.Timestamp(rawValue.value._seconds, rawValue.value._nanoseconds);
+            rawValue = new Date(rawValue.value._seconds * 1000 + rawValue.value._nanoseconds);
           }
           break;
         case 'geopoint':
